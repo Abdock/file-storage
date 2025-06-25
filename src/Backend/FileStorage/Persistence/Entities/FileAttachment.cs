@@ -1,0 +1,12 @@
+﻿using Persistence.Base;
+
+namespace Persistence.Entities;
+
+public class FileAttachment : BaseEntity
+{
+    public required string Name { get; init; }
+    public required string Path { get; init; }
+    public required DateTimeOffset? ExpiresAt { get; init; }
+    public required Guid CreatorApiKeyId { get; init; }
+    public ApiKey? CreatorApiKey { get; init; }
+}
