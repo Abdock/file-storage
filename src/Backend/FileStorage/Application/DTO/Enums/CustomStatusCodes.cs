@@ -15,4 +15,6 @@ public enum CustomStatusCodes
     UserWasNotFound = 404_001,
     FileWasNotFound = 404_002,
     ApiKeyWasNotFound = 404_003,
+
+    Unknown = 500_001,
 }
