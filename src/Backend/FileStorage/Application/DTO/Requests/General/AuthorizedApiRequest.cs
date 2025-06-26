@@ -1,6 +1,9 @@
-﻿namespace Application.DTO.Requests.General;
+﻿using Persistence.Enums;
+
+namespace Application.DTO.Requests.General;
 
 public record AuthorizedApiRequest
 {
     public required Guid ApiKeyId { get; init; }
+    public required Permission[] Permissions { get; init; }
 }

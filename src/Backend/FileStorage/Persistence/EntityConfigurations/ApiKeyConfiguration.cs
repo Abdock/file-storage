@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Persistence.Constants;
 using Persistence.Converters;
 using Persistence.Entities;
 
@@ -13,6 +14,10 @@ public class ApiKeyConfiguration : IEntityTypeConfiguration<ApiKey>
         builder.HasOne(e => e.Creator)
             .WithMany()
             .HasForeignKey(e => e.CreatorId);
+        builder.Property(e => e.Name)
+            .HasMaxLength(MaxLengthConstraints.ApiKeyName);
+        builder.Property(e => e.Token)
+            .HasMaxLength(MaxLengthConstraints.ApiKeyToken);
         builder.PrimitiveCollection(e => e.Permissions)
             .ElementType(typeBuilder =>
             {

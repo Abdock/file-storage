@@ -1,24 +1,27 @@
 ﻿using System.IO.Pipelines;
 using Application.Constants;
+using Application.DTO.Enums;
 using Application.DTO.Mapping;
 using Application.DTO.Requests.FileAttachments;
 using Application.DTO.Responses.FileAttachments;
+using Application.DTO.Responses.General;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using MimeTypes;
 using Persistence.Context;
 using Persistence.Entities;
+using Persistence.Enums;
 using Persistence.Utilities;
 
 namespace Application.CQRS.Commands.FileAttachments;
 
-public class CreateFileAttachmentCommand : ICommand<FileAttachmentResponse>
+public class CreateFileAttachmentCommand : ICommand<BaseResponse<FileAttachmentResponse>>
 {
     public required CreateFileAttachmentRequest Request { get; init; }
 }
 
-public class CreateFileAttachmentCommandHandler : ICommandHandler<CreateFileAttachmentCommand, FileAttachmentResponse>
+public class CreateFileAttachmentCommandHandler : ICommandHandler<CreateFileAttachmentCommand, BaseResponse<FileAttachmentResponse>>
 {
     private readonly IDbContextFactory<StorageContext> _contextFactory;
     private readonly IHostEnvironment _hostEnvironment;
@@ -29,17 +32,29 @@ public class CreateFileAttachmentCommandHandler : ICommandHandler<CreateFileAtta
         _hostEnvironment = hostEnvironment;
     }
 
-    public async ValueTask<FileAttachmentResponse> Handle(CreateFileAttachmentCommand command, CancellationToken cancellationToken)
+    public async ValueTask<BaseResponse<FileAttachmentResponse>> Handle(CreateFileAttachmentCommand command, CancellationToken cancellationToken)
     {
-        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        if (!command.Request.Permissions.Contains(Permission.Write))
+        {
+            return CustomStatusCodes.DoesNotHavePermission;
+        }
+
         var extension = MimeTypeMap.GetExtension(command.Request.MimeType) ?? string.Empty;
-        var name = Identifier.GenerateUlid() + extension;
-        var path = Path.Combine(_hostEnvironment.ContentRootPath, ConfigurationConstants.FilesFolderName, name);
+        var fileName = Identifier.GenerateUlid() + extension;
+        var directoryPath = Path.Combine(_hostEnvironment.ContentRootPath, ConfigurationConstants.FilesFolderName, command.Request.ApiKeyId.ToString("D"));
+        var path = Path.Combine(directoryPath, fileName);
+        if (Path.Exists(path))
+        {
+            return CustomStatusCodes.FileNameAlreadyUsing;
+        }
+
+        Directory.CreateDirectory(directoryPath);
+        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
         await using var fileStream = File.OpenWrite(path);
         await command.Request.Stream.CopyToAsync(PipeWriter.Create(fileStream), cancellationToken);
         var attachment = new FileAttachment
         {
-            Name = name,
+            Name = fileName,
             Path = path,
             ExpiresAt = command.Request.ExpiresAt,
             CreatorApiKeyId = command.Request.ApiKeyId

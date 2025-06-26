@@ -1,16 +1,19 @@
-﻿using Application.DTO.Requests.FileAttachments;
+﻿using Application.DTO.Enums;
+using Application.DTO.Requests.FileAttachments;
+using Application.DTO.Responses.General;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
+using Persistence.Enums;
 
 namespace Application.CQRS.Commands.FileAttachments;
 
-public class DeleteFileAttachmentCommand : ICommand
+public class DeleteFileAttachmentCommand : ICommand<BaseResponse>
 {
     public required DeleteFileAttachmentRequest Request { get; init; }
 }
 
-public class DeleteFileAttachmentCommandHandler : ICommandHandler<DeleteFileAttachmentCommand>
+public class DeleteFileAttachmentCommandHandler : ICommandHandler<DeleteFileAttachmentCommand, BaseResponse>
 {
     private readonly IDbContextFactory<StorageContext> _contextFactory;
 
@@ -19,12 +22,17 @@ public class DeleteFileAttachmentCommandHandler : ICommandHandler<DeleteFileAtta
         _contextFactory = contextFactory;
     }
 
-    public async ValueTask<Unit> Handle(DeleteFileAttachmentCommand command, CancellationToken cancellationToken)
+    public async ValueTask<BaseResponse> Handle(DeleteFileAttachmentCommand command, CancellationToken cancellationToken)
     {
+        if (!command.Request.Permissions.Contains(Permission.Delete))
+        {
+            return CustomStatusCodes.DoesNotHavePermission;
+        }
+
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
-        await context.FileAttachments
-            .Where(e => e.Id == command.Request.Id)
+        var affectRowsCount = await context.FileAttachments
+            .Where(e => e.Id == command.Request.Id && e.CreatorApiKeyId == command.Request.ApiKeyId)
             .ExecuteUpdateAsync(calls => calls.SetProperty(e => e.DeletedAt, DateTimeOffset.UtcNow), cancellationToken);
-        return Unit.Value;
+        return  affectRowsCount > 0 ? CustomStatusCodes.Ok : CustomStatusCodes.FileWasNotFound;
     }
 }
