@@ -29,6 +29,11 @@ public class DeleteFileAttachmentCommandHandler : ICommandHandler<DeleteFileAtta
             return CustomStatusCodes.DoesNotHavePermission;
         }
 
+        if (command.Request.IsRevoked)
+        {
+            return CustomStatusCodes.ApiKeyRevoked;
+        }
+
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
         var affectRowsCount = await context.FileAttachments
             .Where(e => e.Id == command.Request.Id && e.CreatorApiKeyId == command.Request.ApiKeyId)

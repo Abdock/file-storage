@@ -10,7 +10,9 @@ public enum CustomStatusCodes
     UsernameAlreadyUsing = 400_004,
 
     DoesNotHavePermission = 403_001,
+    ApiKeyRevoked = 403_002,
     
     UserWasNotFound = 404_001,
-    FileWasNotFound = 404_002
+    FileWasNotFound = 404_002,
+    ApiKeyWasNotFound = 404_003,
 }

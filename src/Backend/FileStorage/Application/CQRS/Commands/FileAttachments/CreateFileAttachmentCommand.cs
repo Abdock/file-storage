@@ -39,6 +39,11 @@ public class CreateFileAttachmentCommandHandler : ICommandHandler<CreateFileAtta
             return CustomStatusCodes.DoesNotHavePermission;
         }
 
+        if (command.Request.IsRevoked)
+        {
+            return CustomStatusCodes.ApiKeyRevoked;
+        }
+
         var extension = MimeTypeMap.GetExtension(command.Request.MimeType) ?? string.Empty;
         var fileName = Identifier.GenerateUlid() + extension;
         var directoryPath = Path.Combine(_hostEnvironment.ContentRootPath, ConfigurationConstants.FilesFolderName, command.Request.ApiKeyId.ToString("D"));
