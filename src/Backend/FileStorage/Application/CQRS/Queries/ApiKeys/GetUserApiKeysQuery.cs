@@ -1,18 +1,19 @@
 ﻿using Application.DTO.Mapping;
 using Application.DTO.Requests.General;
 using Application.DTO.Responses.ApiKeys;
+using Application.DTO.Responses.General;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
 
 namespace Application.CQRS.Queries.ApiKeys;
 
-public class GetUserApiKeysQuery : IQuery<IReadOnlyCollection<ApiKeyResponse>>
+public class GetUserApiKeysQuery : IQuery<BaseResponse<IReadOnlyCollection<ApiKeyResponse>>>
 {
     public required AuthorizedUserRequest Request { get; init; }
 }
 
-public class GetUserApiKeysQueryHandler : IQueryHandler<GetUserApiKeysQuery, IReadOnlyCollection<ApiKeyResponse>>
+public class GetUserApiKeysQueryHandler : IQueryHandler<GetUserApiKeysQuery, BaseResponse<IReadOnlyCollection<ApiKeyResponse>>>
 {
     private readonly IDbContextFactory<StorageContext> _contextFactory;
 
@@ -21,7 +22,7 @@ public class GetUserApiKeysQueryHandler : IQueryHandler<GetUserApiKeysQuery, IRe
         _contextFactory = contextFactory;
     }
 
-    public async ValueTask<IReadOnlyCollection<ApiKeyResponse>> Handle(GetUserApiKeysQuery query, CancellationToken cancellationToken)
+    public async ValueTask<BaseResponse<IReadOnlyCollection<ApiKeyResponse>>> Handle(GetUserApiKeysQuery query, CancellationToken cancellationToken)
     {
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
         var apiKeys = await context.ApiKeys
