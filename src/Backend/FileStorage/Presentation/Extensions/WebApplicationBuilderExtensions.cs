@@ -96,4 +96,18 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddSingleton<IJwtService, JwtService>();
         return builder;
     }
+
+    public static WebApplicationBuilder ConfigureCors(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(EnvironmentConstants.DefaultCorsPolicy, policyBuilder =>
+            {
+                policyBuilder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            });
+        });
+        return builder;
+    }
 }

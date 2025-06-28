@@ -1,3 +1,4 @@
+using Presentation.Constants;
 using Presentation.Extensions;
 
 var builder = WebApplication.CreateBuilder(args)
@@ -7,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args)
     .ConfigureDbContext()
     .ConfigureHashing()
     .ConfigureCqrs()
+    .ConfigureCors()
     .ConfigureControllers();
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
@@ -14,6 +16,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseCors(EnvironmentConstants.DefaultCorsPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
