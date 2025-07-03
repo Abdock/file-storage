@@ -1,19 +1,19 @@
 ﻿using Application.DTO.Enums;
 using Application.DTO.Requests.FileAttachments;
 using Application.DTO.Responses.General;
+using Application.Extensions;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
-using Persistence.Enums;
 
 namespace Application.CQRS.Commands.FileAttachments;
 
-public class DeleteFileAttachmentCommand : ICommand<BaseResponse>
+public sealed class DeleteFileAttachmentCommand : ICommand<BaseResponse>
 {
     public required DeleteFileAttachmentRequest Request { get; init; }
 }
 
-public class DeleteFileAttachmentCommandHandler : ICommandHandler<DeleteFileAttachmentCommand, BaseResponse>
+public sealed class DeleteFileAttachmentCommandHandler : ICommandHandler<DeleteFileAttachmentCommand, BaseResponse>
 {
     private readonly IDbContextFactory<StorageContext> _contextFactory;
 
@@ -24,14 +24,14 @@ public class DeleteFileAttachmentCommandHandler : ICommandHandler<DeleteFileAtta
 
     public async ValueTask<BaseResponse> Handle(DeleteFileAttachmentCommand command, CancellationToken cancellationToken)
     {
-        if (!command.Request.Permissions.Contains(Permission.Delete))
-        {
-            return CustomStatusCodes.DoesNotHavePermission;
-        }
-
         if (command.Request.IsRevoked)
         {
             return CustomStatusCodes.ApiKeyRevoked;
+        }
+
+        if (!command.Request.IsCanDelete())
+        {
+            return CustomStatusCodes.DoesNotHavePermission;
         }
 
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);

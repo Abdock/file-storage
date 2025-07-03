@@ -1,6 +1,6 @@
 ﻿namespace Application.DTO.Responses.Auth;
 
-public record AuthTokenResponse
+public sealed record AuthTokenResponse
 {
     public required string AccessToken { get; init; }
 }

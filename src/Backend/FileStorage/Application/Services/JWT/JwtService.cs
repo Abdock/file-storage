@@ -10,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Services.JWT;
 
-public class JwtService : IJwtService
+public sealed class JwtService : IJwtService
 {
     private readonly IOptions<JwtOptions> _options;
 

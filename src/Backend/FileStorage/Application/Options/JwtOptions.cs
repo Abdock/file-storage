@@ -1,6 +1,6 @@
 ﻿namespace Application.Options;
 
-public class JwtOptions
+public sealed class JwtOptions
 {
     public required string Issuer { get; init; }
     public required string Audience { get; init; }

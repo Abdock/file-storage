@@ -2,7 +2,7 @@
 
 namespace Application.Services.Hashing;
 
-public class Hasher : IHasher
+public sealed class Hasher : IHasher
 {
     private const int SaltSize = 16;
     private const int HashSize = 64;

@@ -26,7 +26,7 @@ public record BaseResponse<TResponse>
     }
 }
 
-public record BaseResponse : BaseResponse<object>
+public sealed record BaseResponse : BaseResponse<object>
 {
     public static implicit operator BaseResponse(CustomStatusCodes statusCode)
     {

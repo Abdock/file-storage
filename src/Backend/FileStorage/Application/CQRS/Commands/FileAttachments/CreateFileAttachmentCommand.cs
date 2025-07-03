@@ -5,23 +5,23 @@ using Application.DTO.Mapping;
 using Application.DTO.Requests.FileAttachments;
 using Application.DTO.Responses.FileAttachments;
 using Application.DTO.Responses.General;
+using Application.Extensions;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using MimeTypes;
 using Persistence.Context;
 using Persistence.Entities;
-using Persistence.Enums;
 using Persistence.Utilities;
 
 namespace Application.CQRS.Commands.FileAttachments;
 
-public class CreateFileAttachmentCommand : ICommand<BaseResponse<FileAttachmentResponse>>
+public sealed class CreateFileAttachmentCommand : ICommand<BaseResponse<FileAttachmentResponse>>
 {
     public required CreateFileAttachmentRequest Request { get; init; }
 }
 
-public class CreateFileAttachmentCommandHandler : ICommandHandler<CreateFileAttachmentCommand, BaseResponse<FileAttachmentResponse>>
+public sealed class CreateFileAttachmentCommandHandler : ICommandHandler<CreateFileAttachmentCommand, BaseResponse<FileAttachmentResponse>>
 {
     private readonly IDbContextFactory<StorageContext> _contextFactory;
     private readonly IHostEnvironment _hostEnvironment;
@@ -34,14 +34,14 @@ public class CreateFileAttachmentCommandHandler : ICommandHandler<CreateFileAtta
 
     public async ValueTask<BaseResponse<FileAttachmentResponse>> Handle(CreateFileAttachmentCommand command, CancellationToken cancellationToken)
     {
-        if (!command.Request.Permissions.Contains(Permission.Write))
-        {
-            return CustomStatusCodes.DoesNotHavePermission;
-        }
-
         if (command.Request.IsRevoked)
         {
             return CustomStatusCodes.ApiKeyRevoked;
+        }
+
+        if (!command.Request.IsCanWrite())
+        {
+            return CustomStatusCodes.DoesNotHavePermission;
         }
 
         var extension = MimeTypeMap.GetExtension(command.Request.MimeType) ?? string.Empty;

@@ -2,7 +2,7 @@
 
 namespace Application.DTO.Requests.ApiKeys;
 
-public record RevokeApiKeyRequest : AuthorizedUserRequest
+public sealed record RevokeApiKeyRequest : AuthorizedUserRequest
 {
     public required Guid Id { get; init; }
 }

@@ -13,12 +13,12 @@ using Persistence.Entities;
 
 namespace Application.CQRS.Commands.Auth;
 
-public class CreateUserCommand : ICommand<BaseResponse<AuthTokenResponse>>
+public sealed class CreateUserCommand : ICommand<BaseResponse<AuthTokenResponse>>
 {
     public required CreateUserRequest Request { get; init; }
 }
 
-public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, BaseResponse<AuthTokenResponse>>
+public sealed class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, BaseResponse<AuthTokenResponse>>
 {
     private readonly IHasher _hasher;
     private readonly IDbContextFactory<StorageContext> _contextFactory;

@@ -5,7 +5,7 @@ using Persistence.Entities;
 
 namespace Persistence.EntityConfigurations;
 
-public class UserConfiguration : IEntityTypeConfiguration<User>
+public sealed class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {

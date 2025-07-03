@@ -9,7 +9,7 @@ using Persistence.Entities;
 
 namespace Application.CQRS.Commands.ApiKeys;
 
-public class CreateApiKeyCommand : ICommand<BaseResponse<ApiKeyResponse>>
+public sealed class CreateApiKeyCommand : ICommand<BaseResponse<ApiKeyResponse>>
 {
     public required CreateApiKeyRequest Request { get; init; }
 }

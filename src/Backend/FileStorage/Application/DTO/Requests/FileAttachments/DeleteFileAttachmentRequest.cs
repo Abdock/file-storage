@@ -2,7 +2,7 @@
 
 namespace Application.DTO.Requests.FileAttachments;
 
-public record DeleteFileAttachmentRequest : AuthorizedApiRequest
+public sealed record DeleteFileAttachmentRequest : AuthorizedApiRequest
 {
     public required Guid Id { get; init; }
 }

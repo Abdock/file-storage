@@ -2,7 +2,7 @@
 
 namespace Persistence.Entities;
 
-public class FileAttachment : BaseEntity
+public sealed class FileAttachment : BaseEntity
 {
     public required string Name { get; init; }
 

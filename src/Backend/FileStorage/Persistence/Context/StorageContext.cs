@@ -3,13 +3,13 @@ using Persistence.Entities;
 
 namespace Persistence.Context;
 
-public class StorageContext : DbContext
+public sealed class StorageContext : DbContext
 {
     public DbSet<ApiKey> ApiKeys { get; init; }
     public DbSet<FileAttachment> FileAttachments { get; init; }
     public DbSet<User> Users { get; init; }
-    
-    protected StorageContext()
+
+    private StorageContext()
     {
     }
 

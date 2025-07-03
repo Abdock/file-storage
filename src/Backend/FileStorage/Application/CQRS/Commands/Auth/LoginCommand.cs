@@ -11,12 +11,12 @@ using Persistence.Context;
 
 namespace Application.CQRS.Commands.Auth;
 
-public class LoginCommand : ICommand<BaseResponse<AuthTokenResponse>>
+public sealed class LoginCommand : ICommand<BaseResponse<AuthTokenResponse>>
 {
     public required LoginRequest Request { get; init; }
 }
 
-public class LoginCommandHandler : ICommandHandler<LoginCommand, BaseResponse<AuthTokenResponse>>
+public sealed class LoginCommandHandler : ICommandHandler<LoginCommand, BaseResponse<AuthTokenResponse>>
 {
     private readonly IDbContextFactory<StorageContext> _contextFactory;
     private readonly IHasher _hasher;

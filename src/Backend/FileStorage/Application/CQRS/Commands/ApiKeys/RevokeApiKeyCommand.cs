@@ -7,12 +7,12 @@ using Persistence.Context;
 
 namespace Application.CQRS.Commands.ApiKeys;
 
-public class RevokeApiKeyCommand : ICommand<BaseResponse>
+public sealed class RevokeApiKeyCommand : ICommand<BaseResponse>
 {
     public required RevokeApiKeyRequest Request { get; init; }
 }
 
-public class RevokeApiKeyCommandHandler : ICommandHandler<RevokeApiKeyCommand, BaseResponse>
+public sealed class RevokeApiKeyCommandHandler : ICommandHandler<RevokeApiKeyCommand, BaseResponse>
 {
     private readonly IDbContextFactory<StorageContext> _contextFactory;
 

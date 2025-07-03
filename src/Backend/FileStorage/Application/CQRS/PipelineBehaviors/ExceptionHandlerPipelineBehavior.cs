@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.CQRS.PipelineBehaviors;
 
-public class ExceptionHandlerPipelineBehavior<TMessage, TResponse> : IPipelineBehavior<TMessage, BaseResponse<TResponse>> where TMessage : IMessage
+public sealed class ExceptionHandlerPipelineBehavior<TMessage, TResponse> : IPipelineBehavior<TMessage, BaseResponse<TResponse>> where TMessage : IMessage
 {
     private readonly ILogger<ExceptionHandlerPipelineBehavior<TMessage, TResponse>> _logger;
 

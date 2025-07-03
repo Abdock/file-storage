@@ -5,7 +5,7 @@ using Persistence.Entities;
 
 namespace Persistence.EntityConfigurations;
 
-public class FileAttachmentConfiguration : IEntityTypeConfiguration<FileAttachment>
+public sealed class FileAttachmentConfiguration : IEntityTypeConfiguration<FileAttachment>
 {
     public void Configure(EntityTypeBuilder<FileAttachment> builder)
     {

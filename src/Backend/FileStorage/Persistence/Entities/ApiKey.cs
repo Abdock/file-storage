@@ -3,7 +3,7 @@ using Persistence.Enums;
 
 namespace Persistence.Entities;
 
-public class ApiKey : BaseEntity
+public sealed class ApiKey : BaseEntity
 {
     public required Guid CreatorId { get; init; }
     public required string Name { get; init; }

@@ -4,7 +4,7 @@ using Persistence.Utilities;
 
 namespace Persistence.Converters;
 
-public class PermissionConversion : ValueConverter<Permission, string>
+public sealed class PermissionConversion : ValueConverter<Permission, string>
 {
     public PermissionConversion() : base(permission => permission.GetString(), value => value.GetPermissionEnum(true))
     {

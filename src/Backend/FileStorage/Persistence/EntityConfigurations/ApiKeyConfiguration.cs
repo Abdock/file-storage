@@ -6,7 +6,7 @@ using Persistence.Entities;
 
 namespace Persistence.EntityConfigurations;
 
-public class ApiKeyConfiguration : IEntityTypeConfiguration<ApiKey>
+public sealed class ApiKeyConfiguration : IEntityTypeConfiguration<ApiKey>
 {
     public void Configure(EntityTypeBuilder<ApiKey> builder)
     {
