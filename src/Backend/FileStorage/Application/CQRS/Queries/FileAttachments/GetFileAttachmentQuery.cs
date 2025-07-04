@@ -5,7 +5,7 @@ using Application.DTO.Responses.General;
 using Application.Extensions;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
+using MimeTypes;
 using Persistence.Context;
 
 namespace Application.CQRS.Queries.FileAttachments;
@@ -18,22 +18,20 @@ public class GetFileAttachmentQuery : IQuery<BaseResponse<FileContentResponse>>
 public class GetFileAttachmentQueryHandler : IQueryHandler<GetFileAttachmentQuery, BaseResponse<FileContentResponse>>
 {
     private readonly IDbContextFactory<StorageContext> _contextFactory;
-    private readonly IHostEnvironment _hostEnvironment;
 
-    public GetFileAttachmentQueryHandler(IDbContextFactory<StorageContext> contextFactory, IHostEnvironment hostEnvironment)
+    public GetFileAttachmentQueryHandler(IDbContextFactory<StorageContext> contextFactory)
     {
         _contextFactory = contextFactory;
-        _hostEnvironment = hostEnvironment;
     }
 
     public async ValueTask<BaseResponse<FileContentResponse>> Handle(GetFileAttachmentQuery query, CancellationToken cancellationToken)
     {
-        if (query.Request.IsRevoked)
+        if (query.Request.Authorization.IsRevoked)
         {
             return CustomStatusCodes.ApiKeyRevoked;
         }
 
-        if (!query.Request.IsCanRead())
+        if (!query.Request.Authorization.IsCanRead())
         {
             return CustomStatusCodes.DoesNotHavePermission;
         }
@@ -51,7 +49,8 @@ public class GetFileAttachmentQueryHandler : IQueryHandler<GetFileAttachmentQuer
 
         return new FileContentResponse
         {
-            Content = File.OpenRead(path)
+            Content = File.OpenRead(path),
+            MimeType = MimeTypeMap.GetMimeType(Path.GetFileName(path))
         };
     }
 }

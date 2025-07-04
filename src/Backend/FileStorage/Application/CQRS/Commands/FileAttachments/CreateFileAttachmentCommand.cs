@@ -34,19 +34,20 @@ public sealed class CreateFileAttachmentCommandHandler : ICommandHandler<CreateF
 
     public async ValueTask<BaseResponse<FileAttachmentResponse>> Handle(CreateFileAttachmentCommand command, CancellationToken cancellationToken)
     {
-        if (command.Request.IsRevoked)
+        if (command.Request.Authorization.IsRevoked)
         {
             return CustomStatusCodes.ApiKeyRevoked;
         }
 
-        if (!command.Request.IsCanWrite())
+        if (!command.Request.Authorization.IsCanWrite())
         {
             return CustomStatusCodes.DoesNotHavePermission;
         }
 
         var extension = MimeTypeMap.GetExtension(command.Request.MimeType) ?? string.Empty;
         var fileName = Identifier.GenerateUlid() + extension;
-        var directoryPath = Path.Combine(_hostEnvironment.ContentRootPath, ConfigurationConstants.FilesFolderName, command.Request.ApiKeyId.ToString("D"));
+        var apiKeyId = command.Request.Authorization.ApiKeyId;
+        var directoryPath = Path.Combine(_hostEnvironment.ContentRootPath, ConfigurationConstants.FilesFolderName, apiKeyId.ToString("D"));
         var path = Path.Combine(directoryPath, fileName);
         if (Path.Exists(path))
         {
@@ -62,7 +63,7 @@ public sealed class CreateFileAttachmentCommandHandler : ICommandHandler<CreateF
             Name = fileName,
             Path = path,
             ExpiresAt = command.Request.ExpiresAt,
-            CreatorApiKeyId = command.Request.ApiKeyId
+            CreatorApiKeyId = apiKeyId
         };
         await context.FileAttachments.AddAsync(attachment, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);

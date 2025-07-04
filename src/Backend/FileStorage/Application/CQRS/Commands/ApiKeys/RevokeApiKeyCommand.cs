@@ -25,7 +25,7 @@ public sealed class RevokeApiKeyCommandHandler : ICommandHandler<RevokeApiKeyCom
     {
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
         var affectedRowsCount = await context.ApiKeys
-            .Where(e => e.Id == command.Request.Id && e.CreatorId == command.Request.UserId)
+            .Where(e => e.Id == command.Request.Id && e.CreatorId == command.Request.Authorization.UserId)
             .ExecuteUpdateAsync(calls => calls.SetProperty(e => e.IsRevoked, true), cancellationToken);
         return affectedRowsCount > 0 ? CustomStatusCodes.Ok : CustomStatusCodes.ApiKeyWasNotFound;
     }

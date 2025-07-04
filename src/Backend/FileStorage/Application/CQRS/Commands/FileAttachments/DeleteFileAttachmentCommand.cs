@@ -24,19 +24,19 @@ public sealed class DeleteFileAttachmentCommandHandler : ICommandHandler<DeleteF
 
     public async ValueTask<BaseResponse> Handle(DeleteFileAttachmentCommand command, CancellationToken cancellationToken)
     {
-        if (command.Request.IsRevoked)
+        if (command.Request.Authorization.IsRevoked)
         {
             return CustomStatusCodes.ApiKeyRevoked;
         }
 
-        if (!command.Request.IsCanDelete())
+        if (!command.Request.Authorization.IsCanDelete())
         {
             return CustomStatusCodes.DoesNotHavePermission;
         }
 
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
         var affectRowsCount = await context.FileAttachments
-            .Where(e => e.Id == command.Request.Id && e.CreatorApiKeyId == command.Request.ApiKeyId)
+            .Where(e => e.Id == command.Request.Id && e.CreatorApiKeyId == command.Request.Authorization.ApiKeyId)
             .ExecuteUpdateAsync(calls => calls.SetProperty(e => e.DeletedAt, DateTimeOffset.UtcNow), cancellationToken);
         return  affectRowsCount > 0 ? CustomStatusCodes.Ok : CustomStatusCodes.FileWasNotFound;
     }

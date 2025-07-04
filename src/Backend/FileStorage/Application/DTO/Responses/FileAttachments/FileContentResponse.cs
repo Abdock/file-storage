@@ -3,6 +3,7 @@
 public sealed record FileContentResponse : IAsyncDisposable, IDisposable
 {
     public required Stream Content { get; init; }
+    public required string MimeType { get; init; }
 
     public void Dispose()
     {

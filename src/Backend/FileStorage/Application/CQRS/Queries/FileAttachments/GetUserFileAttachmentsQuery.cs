@@ -26,19 +26,19 @@ public class GetUserFilesQueryHandler : IQueryHandler<GetUserFileAttachmentsQuer
 
     public async ValueTask<BaseResponse<PagedResponse<FileAttachmentResponse>>> Handle(GetUserFileAttachmentsQuery query, CancellationToken cancellationToken)
     {
-        if (query.Request.IsRevoked)
+        if (query.Request.Authorization.IsRevoked)
         {
             return CustomStatusCodes.ApiKeyRevoked;
         }
 
-        if (!query.Request.IsCanRead())
+        if (!query.Request.Authorization.IsCanRead())
         {
             return CustomStatusCodes.DoesNotHavePermission;
         }
 
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
         var response = await context.FileAttachments
-            .Where(e => e.CreatorApiKeyId == query.Request.ApiKeyId)
+            .Where(e => e.CreatorApiKeyId == query.Request.Authorization.ApiKeyId)
             .AsNoTracking()
             .Select(FileAttachmentMapping.MapToResponseQuery)
             .ApplyPaginationAsync(query.Request, cancellationToken);

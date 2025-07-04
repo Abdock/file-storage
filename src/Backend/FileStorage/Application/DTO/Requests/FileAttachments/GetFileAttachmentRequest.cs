@@ -2,7 +2,8 @@
 
 namespace Application.DTO.Requests.FileAttachments;
 
-public sealed record GetFileAttachmentRequest : AuthorizedApiRequest
+public sealed record GetFileAttachmentRequest
 {
     public required string FileName { get; init; }
+    public required AuthorizedApiRequest Authorization { get; init; }
 }

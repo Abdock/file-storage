@@ -29,7 +29,7 @@ public class CreateApiKeyCommandHandler : ICommandHandler<CreateApiKeyCommand, B
         var token = Guid.NewGuid().ToString();
         var apiKey = new ApiKey
         {
-            CreatorId = command.Request.UserId,
+            CreatorId = command.Request.Authorization.UserId,
             Name = command.Request.Name,
             Token = token,
             Permissions = command.Request.Permissions
