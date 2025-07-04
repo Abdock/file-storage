@@ -20,6 +20,7 @@ app.UseCors(EnvironmentConstants.DefaultCorsPolicy);
 app.UseCustomExceptionHandler();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseHttpLogging();
 app.UseLogContextEnrich();
 app.MapControllers();
 app.Run();

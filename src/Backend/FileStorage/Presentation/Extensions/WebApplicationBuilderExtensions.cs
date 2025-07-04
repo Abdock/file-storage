@@ -3,6 +3,7 @@ using Application.Options;
 using Application.Services.Hashing;
 using Application.Services.JWT;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Persistence.Context;
@@ -53,6 +54,10 @@ public static class WebApplicationBuilderExtensions
             .CreateLogger();
         builder.Logging.ClearProviders();
         builder.Logging.AddSerilog(logger);
+        builder.Services.AddHttpLogging(options =>
+        {
+            options.LoggingFields = HttpLoggingFields.RequestHeaders;
+        });
         return builder;
     }
 
