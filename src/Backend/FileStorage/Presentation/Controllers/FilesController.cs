@@ -78,7 +78,7 @@ public sealed class FilesController : ControllerBase
     [ProducesResponseType<BaseResponse<FileAttachmentResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<BaseResponse<FileAttachmentResponse>>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<BaseResponse<FileAttachmentResponse>>(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType<BaseResponse<FileAttachmentResponse>>(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UploadFile([FromBody] UploadFileInput input, CancellationToken cancellationToken)
     {
         var mimeType = MimeTypeMap.GetMimeType(input.File.FileName);
@@ -104,7 +104,7 @@ public sealed class FilesController : ControllerBase
     [ProducesResponseType<BaseResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<BaseResponse>(StatusCodes.Status403Forbidden)]
     [ProducesResponseType<BaseResponse>(StatusCodes.Status404NotFound)]
-    [ProducesResponseType<BaseResponse>(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteFile([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var request = new DeleteFileAttachmentRequest
