@@ -1,5 +1,4 @@
 ﻿using Application.DTO.Enums;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;

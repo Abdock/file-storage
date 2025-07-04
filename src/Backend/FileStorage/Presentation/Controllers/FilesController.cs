@@ -97,4 +97,26 @@ public sealed class FilesController : ControllerBase
         var response = await _mediator.Send(command, cancellationToken);
         return response.IsSuccess ? Ok(response) : response.AsActionResult();
     }
+
+    [ApiKeyAuthorize]
+    [HttpDelete]
+    [Route("{id:guid}")]
+    [ProducesResponseType<BaseResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<BaseResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<BaseResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<BaseResponse>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteFile([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var request = new DeleteFileAttachmentRequest
+        {
+            Id = id,
+            Authorization = HttpContext.GetAuthorizedRequestOrDefault()!
+        };
+        var command = new DeleteFileAttachmentCommand
+        {
+            Request = request
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+        return response.IsSuccess ? Ok(response) : response.AsActionResult();
+    }
 }
