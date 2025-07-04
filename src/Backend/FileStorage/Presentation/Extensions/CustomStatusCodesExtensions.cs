@@ -4,7 +4,7 @@ using Presentation.DTO.Responses.General;
 
 namespace Presentation.Extensions;
 
-public static class ActionResultExtensions
+public static class CustomStatusCodesExtensions
 {
     public static IActionResult MapToActionResult(this CustomStatusCodes statusCode)
     {

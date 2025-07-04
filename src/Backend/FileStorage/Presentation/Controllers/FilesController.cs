@@ -52,6 +52,8 @@ public sealed class FilesController : ControllerBase
 
     [ApiKeyAuthorize]
     [HttpGet]
+    [ProducesResponseType<BaseResponse<PagedResponse<FileAttachmentResponse>>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<BaseResponse<PagedResponse<FileAttachmentResponse>>>> GetFiles([FromQuery] PaginationRequest pagination, CancellationToken cancellationToken)
     {
         var request = new GetUserFileAttachmentsRequest
