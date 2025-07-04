@@ -1,10 +1,13 @@
-﻿using Application.CQRS.Queries.FileAttachments;
+﻿using Application.CQRS.Commands.FileAttachments;
+using Application.CQRS.Queries.FileAttachments;
 using Application.DTO.Requests.FileAttachments;
 using Application.DTO.Responses.FileAttachments;
 using Application.DTO.Responses.General;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
+using MimeTypes;
 using Presentation.Attributes.Authorization;
+using Presentation.DTO.Requests.Files;
 using Presentation.DTO.Requests.General;
 using Presentation.DTO.Responses.General;
 using Presentation.Extensions;
@@ -43,7 +46,7 @@ public sealed class FilesController : ControllerBase
         var response = await _mediator.Send(query, cancellationToken);
         if (!response.IsSuccess)
         {
-            return response.StatusCode.MapToActionResult();
+            return response.AsErrorActionResult();
         }
 
         await using var content = response.Response!;
@@ -68,5 +71,30 @@ public sealed class FilesController : ControllerBase
         };
         var response = await _mediator.Send(query, cancellationToken);
         return Ok(response);
+    }
+
+    [ApiKeyAuthorize]
+    [HttpPost]
+    [ProducesResponseType<BaseResponse<FileAttachmentResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<BaseResponse<FileAttachmentResponse>>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<BaseResponse<FileAttachmentResponse>>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<BaseResponse<FileAttachmentResponse>>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UploadFile([FromBody] UploadFileInput input, CancellationToken cancellationToken)
+    {
+        var mimeType = MimeTypeMap.GetMimeType(input.File.FileName);
+        await using var stream = input.File.OpenReadStream();
+        var request = new CreateFileAttachmentRequest
+        {
+            Stream = stream,
+            MimeType = mimeType,
+            ExpiresAt = input.ExpiresAt,
+            Authorization = HttpContext.GetAuthorizedRequestOrDefault()!
+        };
+        var command = new CreateFileAttachmentCommand
+        {
+            Request = request
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+        return response.IsSuccess ? Ok(response) : response.AsActionResult();
     }
 }
