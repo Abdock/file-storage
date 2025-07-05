@@ -15,6 +15,8 @@ using Presentation.Extensions;
 
 namespace Presentation.Controllers;
 
+[ApiController]
+[Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
     private readonly IMediator _mediator;
