@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Application.DTO.Requests.General;
 
-namespace Presentation.DTO.Requests.General;
+namespace Presentation.DTO.Inputs.General;
 
-public record PaginationRequest : IPaginationRequest
+public record PaginationInput : IPaginationRequest
 {
     [Range(1, 1000)]
     public int Take { get; init; } = 50;

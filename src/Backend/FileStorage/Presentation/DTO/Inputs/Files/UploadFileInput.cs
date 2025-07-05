@@ -1,4 +1,4 @@
-﻿namespace Presentation.DTO.Requests.Files;
+﻿namespace Presentation.DTO.Inputs.Files;
 
 public record UploadFileInput
 {

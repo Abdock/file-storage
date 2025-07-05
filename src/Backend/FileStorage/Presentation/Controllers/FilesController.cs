@@ -7,8 +7,8 @@ using Mediator;
 using Microsoft.AspNetCore.Mvc;
 using MimeTypes;
 using Presentation.Attributes.Authorization;
-using Presentation.DTO.Requests.Files;
-using Presentation.DTO.Requests.General;
+using Presentation.DTO.Inputs.Files;
+using Presentation.DTO.Inputs.General;
 using Presentation.DTO.Responses.General;
 using Presentation.Extensions;
 
@@ -57,7 +57,7 @@ public sealed class FilesController : ControllerBase
     [HttpGet]
     [ProducesResponseType<BaseResponse<PagedResponse<FileAttachmentResponse>>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<BaseResponse<PagedResponse<FileAttachmentResponse>>>> GetFiles([FromQuery] PaginationRequest pagination, CancellationToken cancellationToken)
+    public async Task<ActionResult<BaseResponse<PagedResponse<FileAttachmentResponse>>>> GetFiles([FromQuery] PaginationInput pagination, CancellationToken cancellationToken)
     {
         var request = new GetUserFileAttachmentsRequest
         {
