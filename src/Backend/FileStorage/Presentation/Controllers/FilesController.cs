@@ -27,7 +27,7 @@ public sealed class FilesController : ControllerBase
 
     [ApiKeyAuthorize]
     [HttpGet]
-    [Route("{fileName:alpha}")]
+    [Route("{fileName}")]
     [ProducesResponseType<FileResult>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
@@ -49,7 +49,7 @@ public sealed class FilesController : ControllerBase
             return response.AsErrorActionResult();
         }
 
-        await using var content = response.Response!;
+        var content = response.Response!;
         return File(content.Content, content.MimeType);
     }
 
@@ -79,7 +79,7 @@ public sealed class FilesController : ControllerBase
     [ProducesResponseType<BaseResponse<FileAttachmentResponse>>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<BaseResponse<FileAttachmentResponse>>(StatusCodes.Status403Forbidden)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UploadFile([FromBody] UploadFileInput input, CancellationToken cancellationToken)
+    public async Task<IActionResult> UploadFile([FromForm] UploadFileInput input, CancellationToken cancellationToken)
     {
         var mimeType = MimeTypeMap.GetMimeType(input.File.FileName);
         await using var stream = input.File.OpenReadStream();

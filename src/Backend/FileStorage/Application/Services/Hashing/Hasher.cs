@@ -15,4 +15,13 @@ public sealed class Hasher : IHasher
         var hash = Rfc2898DeriveBytes.Pbkdf2(value, salt, Iterations, Algorithm, HashSize);
         return $"{Convert.ToHexString(hash)}-{Convert.ToHexString(salt)}";
     }
+
+    public bool Verify(string password, string passwordHash)
+    {
+        var parts = passwordHash.Split('-');
+        var hash = Convert.FromHexString(parts[0]);
+        var salt = Convert.FromHexString(parts[^1]);
+        var newHash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, Algorithm, HashSize);
+        return CryptographicOperations.FixedTimeEquals(hash, newHash);
+    }
 }

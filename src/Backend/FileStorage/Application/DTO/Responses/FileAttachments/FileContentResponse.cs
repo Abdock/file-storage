@@ -1,17 +1,7 @@
 ﻿namespace Application.DTO.Responses.FileAttachments;
 
-public sealed record FileContentResponse : IAsyncDisposable, IDisposable
+public sealed record FileContentResponse
 {
     public required Stream Content { get; init; }
     public required string MimeType { get; init; }
-
-    public void Dispose()
-    {
-        Content.Dispose();
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await Content.DisposeAsync();
-    }
 }

@@ -32,11 +32,10 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand, BaseResp
     public async ValueTask<BaseResponse<AuthTokenResponse>> Handle(LoginCommand command, CancellationToken cancellationToken)
     {
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
-        var passwordHash = _hasher.ComputeHash(command.Request.Password);
         var user = await context.Users
             .AsNoTracking()
-            .FirstOrDefaultAsync(e => e.Username == command.Request.Username && e.PasswordHash == passwordHash, cancellationToken);
-        if (user is null)
+            .FirstOrDefaultAsync(e => e.Username == command.Request.Username, cancellationToken);
+        if (user is null || !_hasher.Verify(command.Request.Password, user.PasswordHash))
         {
             return CustomStatusCodes.InvalidUserCredentials;
         }

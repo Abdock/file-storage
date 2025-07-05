@@ -11,7 +11,7 @@ public sealed class ApiKeyFilter : IAsyncAuthorizationFilter
 {
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
-        if (!context.HttpContext.Request.Headers.TryGetValue(HttpHeaderConstants.ApiKey, out var token))
+        if (!context.HttpContext.Request.Headers.TryGetValue(HttpHeaderConstants.ApiKey, out var value))
         {
             context.Result = CustomStatusCodes.ApiKeyWasNotFound.AsErrorActionResult();
             return;
@@ -20,6 +20,7 @@ public sealed class ApiKeyFilter : IAsyncAuthorizationFilter
         var cancellationToken = context.HttpContext.RequestAborted;
         var dbContextFactory = context.HttpContext.RequestServices.GetRequiredService<IDbContextFactory<StorageContext>>();
         await using var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        var token = value.ToString();
         var key = await dbContext.ApiKeys.FirstOrDefaultAsync(e => e.Token == token, cancellationToken);
         if (key is null)
         {
