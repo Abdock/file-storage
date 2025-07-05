@@ -1,4 +1,6 @@
 ﻿using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Application.Options;
 using Application.Services.Hashing;
 using Application.Services.JWT;
@@ -69,7 +71,19 @@ public static class WebApplicationBuilderExtensions
 
     public static WebApplicationBuilder ConfigureControllers(this WebApplicationBuilder builder)
     {
-        builder.Services.AddControllers();
+        var defaultEnumConverter = new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseUpper);
+        builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(defaultEnumConverter);
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            });
+        builder.Services.AddOpenApi()
+            .ConfigureHttpJsonOptions(options =>
+            {
+                options.SerializerOptions.Converters.Add(defaultEnumConverter);
+                options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            });
         return builder;
     }
 
