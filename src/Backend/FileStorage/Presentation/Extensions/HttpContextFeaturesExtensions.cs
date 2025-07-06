@@ -21,4 +21,10 @@ public static class HttpContextFeaturesExtensions
             IsRevoked = key.IsRevoked
         };
     }
+
+    public static string GetApiKey(this HttpContext httpContext)
+    {
+        var key = httpContext.Features.Get<ApiKey>();
+        return key?.Token ?? string.Empty;
+    }
 }
