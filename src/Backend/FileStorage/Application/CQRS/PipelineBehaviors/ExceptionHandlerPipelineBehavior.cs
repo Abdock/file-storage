@@ -2,14 +2,15 @@
 using Application.DTO.Responses.General;
 using Mediator;
 using Microsoft.Extensions.Logging;
+using ZLogger;
 
 namespace Application.CQRS.PipelineBehaviors;
 
 public sealed class ExceptionHandlerPipelineBehavior<TMessage, TResponse> : IPipelineBehavior<TMessage, BaseResponse<TResponse>> where TMessage : IMessage
 {
-    private readonly ILogger<ExceptionHandlerPipelineBehavior<TMessage, TResponse>> _logger;
+    private readonly ILogger<ExceptionHandlerPipelineBehavior<TMessage, BaseResponse<TResponse>>> _logger;
 
-    public ExceptionHandlerPipelineBehavior(ILogger<ExceptionHandlerPipelineBehavior<TMessage, TResponse>> logger)
+    public ExceptionHandlerPipelineBehavior(ILogger<ExceptionHandlerPipelineBehavior<TMessage, BaseResponse<TResponse>>> logger)
     {
         _logger = logger;
     }
@@ -22,7 +23,7 @@ public sealed class ExceptionHandlerPipelineBehavior<TMessage, TResponse> : IPip
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, "Unknown exception, while execute {Message}", nameof(TMessage));
+            _logger.ZLogCritical(e, $"Unknown exception, while execute {typeof(TMessage).Name}");
             return CustomStatusCodes.Unknown;
         }
     }
@@ -30,9 +31,9 @@ public sealed class ExceptionHandlerPipelineBehavior<TMessage, TResponse> : IPip
 
 public class ExceptionHandlerPipelineBehavior<TMessage> : IPipelineBehavior<TMessage, BaseResponse> where TMessage : IMessage
 {
-    private readonly ILogger<ExceptionHandlerPipelineBehavior<TMessage>> _logger;
+    private readonly ILogger<ExceptionHandlerPipelineBehavior<TMessage, BaseResponse>> _logger;
 
-    public ExceptionHandlerPipelineBehavior(ILogger<ExceptionHandlerPipelineBehavior<TMessage>> logger)
+    public ExceptionHandlerPipelineBehavior(ILogger<ExceptionHandlerPipelineBehavior<TMessage, BaseResponse>> logger)
     {
         _logger = logger;
     }
@@ -45,7 +46,7 @@ public class ExceptionHandlerPipelineBehavior<TMessage> : IPipelineBehavior<TMes
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, "Unknown exception, while execute {Message}", nameof(TMessage));
+            _logger.ZLogCritical(e, $"Unknown exception, while execute {typeof(TMessage).Name}");
             return CustomStatusCodes.Unknown;
         }
     }

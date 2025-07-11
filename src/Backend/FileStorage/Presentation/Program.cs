@@ -5,7 +5,7 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args)
     .ConfigureSecrets()
     .ConfigureAuth()
-    .ConfigureLogging()
+    .ConfigureZLogger()
     .ConfigureDbContext()
     .ConfigureHashing()
     .ConfigureCqrs()
@@ -23,6 +23,6 @@ app.UseCors(EnvironmentConstants.DefaultCorsPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHttpLogging();
-app.UseLogContextEnrich();
+app.UseZLoggerContextEnrich();
 app.MapControllers();
 app.Run();

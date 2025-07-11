@@ -15,4 +15,10 @@ public static class WebApplicationExtensions
         app.UseMiddleware<EnrichLoggerContextMiddleware>();
         return app;
     }
+
+    public static WebApplication UseZLoggerContextEnrich(this WebApplication app)
+    {
+        app.UseMiddleware<EnrichZLoggerContextMiddleware>();
+        return app;
+    }
 }

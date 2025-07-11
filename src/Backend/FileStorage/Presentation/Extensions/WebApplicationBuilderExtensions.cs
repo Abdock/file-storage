@@ -12,6 +12,10 @@ using Persistence.Context;
 using Presentation.Constants;
 using Serilog;
 using Serilog.Events;
+using ZLinq;
+using ZLogger;
+using ZLogger.Formatters;
+using MessageTemplate = ZLogger.MessageTemplate;
 
 namespace Presentation.Extensions;
 
@@ -56,6 +60,59 @@ public static class WebApplicationBuilderExtensions
             .CreateLogger();
         builder.Logging.ClearProviders();
         builder.Logging.AddSerilog(logger);
+        builder.Services.AddHttpLogging(options =>
+        {
+            options.LoggingFields = HttpLoggingFields.RequestHeaders;
+        });
+        return builder;
+    }
+
+    public static WebApplicationBuilder ConfigureZLogger(this WebApplicationBuilder builder)
+    {
+        Action<PlainTextZLoggerFormatter> formatterConfiguration = formatter =>
+        {
+            formatter.SetPrefixFormatter($"[{0:utc-longdate} {1:short} {2}] {3} User id: {4} API Token: {5} ", (in MessageTemplate template, in LogInfo info) =>
+            {
+                var scope = info.ScopeState;
+                string correlationId = string.Empty, userId = string.Empty, apiToken = string.Empty;
+                if (scope is not null && !scope.IsEmpty)
+                {
+                    var props = scope.Properties.AsValueEnumerable();
+                    correlationId = props
+                        .FirstOrDefault(e => e.Key.Equals(LoggingConstants.CorrelationIdKey))
+                        .Value?.ToString() ?? string.Empty;
+                    userId = props
+                        .FirstOrDefault(e => e.Key.Equals(LoggingConstants.UserIdKey))
+                        .Value?.ToString() ?? string.Empty;
+                    apiToken = props
+                        .FirstOrDefault(e => e.Key.Equals(LoggingConstants.ApiTokenKey))
+                        .Value?.ToString() ?? string.Empty;
+                }
+
+                template.Format(info.Timestamp, info.LogLevel, correlationId, info.EventId, userId, apiToken);
+            });
+            formatter.SetExceptionFormatter((writer, exception) =>
+            {
+                Utf8StringInterpolation.Utf8String.Format(writer, $"{exception.Message}");
+            });
+        };
+        builder.Logging
+            .ClearProviders()
+            .AddFilter("Microsoft.AspNetCore", LogLevel.Information)
+            .AddZLoggerConsole(options =>
+            {
+                options.TimeProvider = TimeProvider.System;
+                options.IncludeScopes = true;
+                options.UsePlainTextFormatter(formatterConfiguration);
+            })
+            .AddZLoggerRollingFile((options, services) =>
+            {
+                options.FilePathSelector = (offset, sequenceNumber) => $"{services.GetRequiredService<IHostEnvironment>().ContentRootPath}/logs/zlogs-{offset:yyyyddMM}_{sequenceNumber:000}.log";
+                options.TimeProvider = TimeProvider.System;
+                options.RollingInterval = ZLogger.Providers.RollingInterval.Day;
+                options.IncludeScopes = true;
+                options.UsePlainTextFormatter(formatterConfiguration);
+            });
         builder.Services.AddHttpLogging(options =>
         {
             options.LoggingFields = HttpLoggingFields.RequestHeaders;
