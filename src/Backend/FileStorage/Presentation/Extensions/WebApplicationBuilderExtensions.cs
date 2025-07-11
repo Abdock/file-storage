@@ -44,7 +44,7 @@ public static class WebApplicationBuilderExtensions
         return builder;
     }
 
-    public static WebApplicationBuilder ConfigureLogging(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder ConfigureSerilog(this WebApplicationBuilder builder)
     {
         const string logMessageTemplate = "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {EnvironmentName} {CorrelationId} {Level:u3}] User id: {UserId} API Token: {ApiToken} IP: {ClientIp} {Operation} {Message:lj}{NewLine}{Exception}";
         var logger = new LoggerConfiguration()
@@ -55,7 +55,7 @@ public static class WebApplicationBuilderExtensions
             .Async(configuration =>
             {
                 configuration.Console(restrictedToMinimumLevel: LogEventLevel.Information, outputTemplate: logMessageTemplate);
-                configuration.File("logs.log", rollingInterval: RollingInterval.Hour, restrictedToMinimumLevel: LogEventLevel.Information, outputTemplate: logMessageTemplate);
+                configuration.File("logs.log", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Information, outputTemplate: logMessageTemplate);
             })
             .CreateLogger();
         builder.Logging.ClearProviders();
@@ -71,7 +71,7 @@ public static class WebApplicationBuilderExtensions
     {
         Action<PlainTextZLoggerFormatter> formatterConfiguration = formatter =>
         {
-            formatter.SetPrefixFormatter($"[{0:utc-longdate} {1:short} {2}] {3} User id: {4} API Token: {5} ", (in MessageTemplate template, in LogInfo info) =>
+            formatter.SetPrefixFormatter($"[{0:utc-longdate} {1:short} {2}] User id: {3} API Token: {4} ", (in MessageTemplate template, in LogInfo info) =>
             {
                 var scope = info.ScopeState;
                 string correlationId = string.Empty, userId = string.Empty, apiToken = string.Empty;
@@ -89,16 +89,15 @@ public static class WebApplicationBuilderExtensions
                         .Value?.ToString() ?? string.Empty;
                 }
 
-                template.Format(info.Timestamp, info.LogLevel, correlationId, info.EventId, userId, apiToken);
+                template.Format(info.Timestamp, info.LogLevel, correlationId, userId, apiToken);
             });
             formatter.SetExceptionFormatter((writer, exception) =>
             {
-                Utf8StringInterpolation.Utf8String.Format(writer, $"{exception.Message}");
+                Utf8StringInterpolation.Utf8String.Format(writer, $"\n{exception.ToString()}");
             });
         };
         builder.Logging
             .ClearProviders()
-            .AddFilter("Microsoft.AspNetCore", LogLevel.Information)
             .AddFilter("Microsoft.AspNetCore.HttpLogging", LogLevel.Information)
             .AddFilter("Microsoft.AspNetCore.Hosting", LogLevel.Information)
             .AddFilter("Microsoft.AspNetCore.Routing", LogLevel.Debug) 

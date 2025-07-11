@@ -10,7 +10,7 @@ public static class WebApplicationExtensions
         return app;
     }
 
-    public static WebApplication UseLogContextEnrich(this WebApplication app)
+    public static WebApplication UseSerilogContextEnrich(this WebApplication app)
     {
         app.UseMiddleware<EnrichLoggerContextMiddleware>();
         return app;
