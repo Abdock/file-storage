@@ -110,7 +110,8 @@ public static class WebApplicationBuilderExtensions
             })
             .AddZLoggerRollingFile((options, services) =>
             {
-                options.FilePathSelector = (offset, sequenceNumber) => $"{services.GetRequiredService<IHostEnvironment>().ContentRootPath}/logs/zlogs-{offset:yyyyddMM}_{sequenceNumber:000}.log";
+                var environment = services.GetRequiredService<IHostEnvironment>();
+                options.FilePathSelector = (offset, sequenceNumber) => Path.Combine(environment.ContentRootPath, "logs", $"zlogs-{offset:yyyyddMM}_{sequenceNumber:000}.log");
                 options.TimeProvider = TimeProvider.System;
                 options.RollingInterval = ZLogger.Providers.RollingInterval.Day;
                 options.IncludeScopes = true;
