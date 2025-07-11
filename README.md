@@ -6,7 +6,7 @@ Platform: .NET 9.0
 ORM: EntityFramework Core
 Auth*: JWT/API Key
 DB: PostgreSQL
-Logging: Serilog
+Logging: [ZLogger](https://github.com/Cysharp/ZLogger)
 
 ## Features
 - **Simple Auth***: simple implementation of authentication/authorization based on username and passwords
