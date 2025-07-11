@@ -46,7 +46,7 @@ public class ExceptionHandlerPipelineBehavior<TMessage> : IPipelineBehavior<TMes
         }
         catch (Exception e)
         {
-            _logger.ZLogCritical(e, $"Unknown exception, while execute {typeof(TMessage).Name}");
+            _logger.LogCritical(e, "Unknown exception, while execute {TypeName}", typeof(TMessage).Name);
             return CustomStatusCodes.Unknown;
         }
     }

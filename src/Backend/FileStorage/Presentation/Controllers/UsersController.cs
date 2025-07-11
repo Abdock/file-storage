@@ -1,8 +1,10 @@
 ﻿using Application.CQRS.Commands.Auth;
+using Application.CQRS.Queries.ApiKeys;
 using Application.CQRS.Queries.Users;
 using Application.DTO.Requests.Auth;
 using Application.DTO.Requests.General;
 using Application.DTO.Requests.Users;
+using Application.DTO.Responses.ApiKeys;
 using Application.DTO.Responses.Auth;
 using Application.DTO.Responses.General;
 using Application.DTO.Responses.Users;
@@ -39,6 +41,26 @@ public class UsersController : ControllerBase
             UserId = User.GetUserId()
         };
         var query = new GetAuthorizedUserQuery
+        {
+            Request = request
+        };
+        var response = await _mediator.Send(query, cancellationToken);
+        return response.IsSuccess ? Ok(response) : response.AsActionResult();
+    }
+
+    [Authorize]
+    [HttpGet]
+    [Route("me/api-keys")]
+    [ProducesResponseType<BaseResponse<IReadOnlyCollection<ApiKeyResponse>>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<BaseResponse<IReadOnlyCollection<ApiKeyResponse>>>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetUserApiKeys(CancellationToken cancellationToken)
+    {
+        var request = new AuthorizedUserRequest
+        {
+            UserId = User.GetUserId()
+        };
+        var query = new GetUserApiKeysQuery
         {
             Request = request
         };
