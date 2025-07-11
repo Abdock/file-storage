@@ -2,7 +2,6 @@
 using Application.DTO.Responses.General;
 using Mediator;
 using Microsoft.Extensions.Logging;
-using ZLogger;
 
 namespace Application.CQRS.PipelineBehaviors;
 
@@ -23,7 +22,7 @@ public sealed class ExceptionHandlerPipelineBehavior<TMessage, TResponse> : IPip
         }
         catch (Exception e)
         {
-            _logger.ZLogCritical(e, $"Unknown exception, while execute {typeof(TMessage).Name}");
+            _logger.LogCritical(e, "Unknown exception, while execute {TypeName}", typeof(TMessage).Name);
             return CustomStatusCodes.Unknown;
         }
     }
