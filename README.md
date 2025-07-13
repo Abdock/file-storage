@@ -2,11 +2,11 @@
 My custom implementation of API to store files, based on API keys to operate with files
 
 ## Stack
-Platform: .NET 9.0
-ORM: EntityFramework Core
-Auth*: JWT/API Key
-DB: PostgreSQL
-Logging: [ZLogger](https://github.com/Cysharp/ZLogger)
+- Platform: .NET 9.0
+- ORM: EntityFramework Core
+- Auth*: JWT/API Key
+- DB: PostgreSQL
+- Logging: [ZLogger](https://github.com/Cysharp/ZLogger)
 
 ## Features
 - **Simple Auth***: simple implementation of authentication/authorization based on username and passwords
