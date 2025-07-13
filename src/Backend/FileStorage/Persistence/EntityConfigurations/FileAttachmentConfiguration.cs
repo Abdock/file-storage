@@ -12,6 +12,8 @@ public sealed class FileAttachmentConfiguration : IEntityTypeConfiguration<FileA
         builder.HasKey(x => x.Id);
         builder.Property(e => e.Name)
             .HasMaxLength(MaxLengthConstraints.FileName);
+        builder.Property(e => e.CheckSum)
+            .HasMaxLength(MaxLengthConstraints.CheckSum);
         builder.HasOne(e => e.CreatorApiKey)
             .WithMany()
             .HasForeignKey(e => e.CreatorApiKeyId);

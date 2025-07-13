@@ -7,4 +7,5 @@ public static class MaxLengthConstraints
     public const int FileName = 256;
     public const int ApiKeyName = 64;
     public const int ApiKeyToken = 256;
+    public const int CheckSum = 64;
 }

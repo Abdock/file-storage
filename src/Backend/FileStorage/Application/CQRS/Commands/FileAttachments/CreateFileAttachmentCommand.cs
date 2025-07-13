@@ -1,4 +1,5 @@
 ﻿using System.IO.Pipelines;
+using System.Security.Cryptography;
 using Application.Constants;
 using Application.DTO.Enums;
 using Application.DTO.Mapping;
@@ -58,12 +59,14 @@ public sealed class CreateFileAttachmentCommandHandler : ICommandHandler<CreateF
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
         await using var fileStream = File.OpenWrite(path);
         await command.Request.Stream.CopyToAsync(PipeWriter.Create(fileStream), cancellationToken);
+        var checkSum = await SHA256.HashDataAsync(command.Request.Stream, cancellationToken);
         var attachment = new FileAttachment
         {
             Name = fileName,
             Path = path,
             ExpiresAt = command.Request.ExpiresAt,
-            CreatorApiKeyId = apiKeyId
+            CreatorApiKeyId = apiKeyId,
+            CheckSum = Convert.ToHexStringLower(checkSum)
         };
         await context.FileAttachments.AddAsync(attachment, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);

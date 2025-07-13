@@ -10,5 +10,6 @@ public sealed class FileAttachment : BaseEntity
     public required string Path { get; init; }
     public required DateTimeOffset? ExpiresAt { get; init; }
     public required Guid CreatorApiKeyId { get; init; }
+    public required string CheckSum { get; init; }
     public ApiKey? CreatorApiKey { get; init; }
 }
