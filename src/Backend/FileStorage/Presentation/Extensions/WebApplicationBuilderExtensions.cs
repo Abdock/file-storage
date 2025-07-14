@@ -102,6 +102,9 @@ public static class WebApplicationBuilderExtensions
             .AddFilter("Microsoft.AspNetCore.HttpLogging", LogLevel.Information)
             .AddFilter("Microsoft.AspNetCore.Hosting", LogLevel.Information)
             .AddFilter("Microsoft.AspNetCore.Routing", LogLevel.Information)
+            .AddFilter("Microsoft.AspNetCore.Authentication", LogLevel.Information)
+            .AddFilter("Microsoft.AspNetCore.Diagnostics", LogLevel.Information)
+            .AddFilter("Microsoft.AspNetCore.Analyzers", LogLevel.Information)
             .AddZLoggerConsole(options =>
             {
                 options.TimeProvider = TimeProvider.System;
