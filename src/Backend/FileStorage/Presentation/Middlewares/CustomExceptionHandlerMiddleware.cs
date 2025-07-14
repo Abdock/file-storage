@@ -1,6 +1,5 @@
 ﻿using Application.DTO.Enums;
 using Presentation.DTO.Responses.General;
-using Presentation.Extensions;
 
 namespace Presentation.Middlewares;
 

@@ -1,6 +1,5 @@
 ﻿using Application.DTO.Requests.General;
 using Persistence.Entities;
-using Persistence.Enums;
 
 namespace Presentation.Extensions;
 
